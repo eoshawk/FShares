@@ -1,0 +1,74 @@
+steps:
+  - command: |
+        echo "AUTHENTICATING GOOGLE SERVICE ACCOUNT" && \
+        gcloud --quiet auth activate-service-account b1-automation-svc@b1-automation-dev.iam.gserviceaccount.com --key-file=/etc/gcp-service-account.json && \
+        docker-credential-gcr configure-docker && \
+        echo "BUILDING BUILD IMAGE" && \
+        cd Docker/builder && \
+        docker build -t fcio/builder:latest -t fcio/builder:$BUILDKITE_COMMIT . --build-arg branch=$BUILDKITE_COMMIT && \
+        docker tag fcio/builder:$BUILDKITE_COMMIT gcr.io/b1-automation-dev/fcio/builder:$BUILDKITE_COMMIT && \
+        docker tag fcio/builder:latest gcr.io/b1-automation-dev/fcio/builder:latest && \
+        echo "PUSHING DOCKER IMAGES" && \
+        docker push gcr.io/b1-automation-dev/fcio/builder:$BUILDKITE_COMMIT && \
+        docker push gcr.io/b1-automation-dev/fcio/builder:latest && \
+        echo "TRASHING OLD IMAGES" && \
+        docker rmi fcio/builder:$BUILDKITE_COMMIT && \
+        docker rmi fcio/builder:latest && \
+        docker rmi gcr.io/b1-automation-dev/fcio/builder:$BUILDKITE_COMMIT && \
+        docker rmi gcr.io/b1-automation-dev/fcio/builder:latest
+    label: "Docker build builder"
+    agents:
+      queue: "automation-docker-builder-fleet"
+    timeout: 300
+
+  - wait
+
+  - command: |
+        echo "AUTHENTICATING GOOGLE SERVICE ACCOUNT" && \
+        gcloud --quiet auth activate-service-account b1-automation-svc@b1-automation-dev.iam.gserviceaccount.com --key-file=/etc/gcp-service-account.json && \
+        docker-credential-gcr configure-docker && \
+        echo "BUILDING FC IMAGE" && \
+        docker pull gcr.io/b1-automation-dev/fcio/builder:$BUILDKITE_COMMIT && \
+        cd Docker && \
+        docker build -t fcio/fc:latest -t fcio/fc:$BUILDKITE_COMMIT . --build-arg branch=$BUILDKITE_BRANCH && \
+        docker tag fcio/fc:$BUILDKITE_COMMIT gcr.io/b1-automation-dev/fcio/fc:$BUILDKITE_COMMIT && \
+        docker tag fcio/fc:latest gcr.io/b1-automation-dev/fcio/fc:latest && \
+        echo "PUSHING DOCKER IMAGES" && \
+        docker push gcr.io/b1-automation-dev/fcio/fc:$BUILDKITE_COMMIT && \
+        docker push gcr.io/b1-automation-dev/fcio/fc:latest && \
+        echo "TRASHING OLD IMAGES" && \
+        docker rmi fcio/fc:$BUILDKITE_COMMIT && \
+        docker rmi fcio/fc:latest && \
+        docker rmi gcr.io/b1-automation-dev/fcio/fc:$BUILDKITE_COMMIT && \
+        docker rmi gcr.io/b1-automation-dev/fcio/fc:latest && \
+        docker rmi gcr.io/b1-automation-dev/fcio/builder:$BUILDKITE_COMMIT
+    label: "Docker build fc"
+    agents:
+      queue: "automation-docker-builder-fleet"
+    timeout: 300
+
+  - command: |
+        echo "AUTHENTICATING GOOGLE SERVICE ACCOUNT" && \
+        gcloud --quiet auth activate-service-account b1-automation-svc@b1-automation-dev.iam.gserviceaccount.com --key-file=/etc/gcp-service-account.json && \
+        docker-credential-gcr configure-docker && \
+        echo "BUILDING FC DEV IMAGE" && \
+        docker pull gcr.io/b1-automation-dev/fcio/builder:$BUILDKITE_COMMIT && \
+        cd Docker/dev && \
+        docker build -t fcio/fc-dev:latest -t fcio/fc-dev:$BUILDKITE_COMMIT . --build-arg branch=$BUILDKITE_BRANCH && \
+        docker tag fcio/fc-dev:$BUILDKITE_COMMIT gcr.io/b1-automation-dev/fcio/fc-dev:$BUILDKITE_COMMIT && \
+        docker tag fcio/fc-dev:latest gcr.io/b1-automation-dev/fcio/fc-dev:latest && \
+        echo "PUSHING DOCKER IMAGES" && \
+        docker push gcr.io/b1-automation-dev/fcio/fc-dev:$BUILDKITE_COMMIT && \
+        docker push gcr.io/b1-automation-dev/fcio/fc-dev:latest && \
+        echo "TRASHING OLD IMAGES" && \
+        docker rmi fcio/fc-dev:$BUILDKITE_COMMIT && \
+        docker rmi fcio/fc-dev:latest && \
+        docker rmi gcr.io/b1-automation-dev/fcio/fc-dev:$BUILDKITE_COMMIT && \
+        docker rmi gcr.io/b1-automation-dev/fcio/fc-dev:latest && \
+        docker rmi gcr.io/b1-automation-dev/fcio/builder:$BUILDKITE_COMMIT
+    label: "Docker build fc-dev"
+    agents:
+      queue: "automation-docker-builder-fleet"
+    timeout: 300
+
+  - wait
