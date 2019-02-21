@@ -103,14 +103,15 @@ fi
    install_symlinks   
    create_cmake_symlink "fscio-config.cmake"
 
-   printf "\n\n${bldred}\t _______  _______  _______ _________ _______\n"
-   printf '\t(  ____ \(  ___  )(  ____ \\\\__   __/(  ___  )\n'
-   printf "\t| (    \/| (   ) || (    \/   ) (   | (   ) |\n"
-   printf "\t| (__    | |   | || (_____    | |   | |   | |\n"
-   printf "\t|  __)   | |   | |(_____  )   | |   | |   | |\n"
-   printf "\t| (      | |   | |      ) |   | |   | |   | |\n"
-   printf "\t| (____/\| (___) |/\____) |___) (___| (___) |\n"
-   printf "\t(_______/(_______)\_______)\_______/(_______)\n${txtrst}"
+   printf "\n\n${bldred}\n"
+   printf "\t _______    _______    _______   _________    _______ \n"
+   printf "\t(  ____ \  (  ____ \  (  ____ \  \\__   __/   (  ___  )\n"
+   printf "\t| (    \/  | (    \/  | (    \/     ) (      | (   ) |\n"
+   printf "\t| (____    | (_____   | |           | |      | |   | |\n"
+   printf "\t|  ____)   (_____  )  | |           | |      | |   | |\n"
+   printf "\t| (              ) |  | |           | |      | |   | |\n"
+   printf "\t| (        /\____) |  | (____/\  ___) (___   | (___) |\n"
+   printf "\t(_)        \_______)  (_______/  \_______/   (_______)\n${txtrst}"
 
    printf "\\tFor more information:\\n"
    printf "\\tFSCIO website: https://fsc.io\\n"
